@@ -43,6 +43,7 @@ import com.westly.naijaslang.core.theme.NaijaTheme
 import com.westly.naijaslang.feature.detail.WordDetailScreen
 import com.westly.naijaslang.feature.favourites.FavouritesScreen
 import com.westly.naijaslang.feature.home.HomeScreen
+import com.westly.naijaslang.feature.settings.AboutScreen
 import com.westly.naijaslang.feature.settings.SettingsScreen
 
 /** Routes of the three tabs and of the Word Detail screen (opened from Home or Favourites). */
@@ -51,6 +52,7 @@ object Routes {
     const val FAVOURITES = "favourites"
     const val SETTINGS = "settings"
     const val DETAIL = "detail/{id}"
+    const val ABOUT = "about"
 
     fun detail(id: String) = "detail/${Uri.encode(id)}"
 }
@@ -74,7 +76,12 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val destination = backStackEntry?.destination
-    val onDetail = destination?.route == Routes.DETAIL
+    // Pages opened from a tab keep that tab selected (Word Detail: Home, About: Settings).
+    val parentTab = when (destination?.route) {
+        Routes.DETAIL -> Routes.HOME
+        Routes.ABOUT -> Routes.SETTINGS
+        else -> null
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -82,16 +89,15 @@ fun AppNavigation() {
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             AppBottomBar(
-                // Word Detail keeps Home selected, as in the design.
                 isSelected = { route ->
-                    if (onDetail) {
-                        route == Routes.HOME
+                    if (parentTab != null) {
+                        route == parentTab
                     } else {
                         destination?.hierarchy?.any { it.route == route } == true
                     }
                 },
                 onTabClick = { route ->
-                    if (onDetail) navController.popBackStack()
+                    if (parentTab != null) navController.popBackStack()
                     navController.navigateToTab(route)
                 },
             )
@@ -115,7 +121,12 @@ fun AppNavigation() {
             composable(Routes.FAVOURITES) {
                 FavouritesScreen(onOpenWord = { id -> navController.navigate(Routes.detail(id)) })
             }
-            composable(Routes.SETTINGS) { SettingsScreen() }
+            composable(Routes.SETTINGS) {
+                SettingsScreen(onOpenAbout = { navController.navigate(Routes.ABOUT) })
+            }
+            composable(Routes.ABOUT) {
+                AboutScreen(onBack = { navController.popBackStack() })
+            }
             composable(
                 route = Routes.DETAIL,
                 arguments = listOf(navArgument("id") { type = NavType.StringType }),

@@ -47,6 +47,9 @@ internal val LightExampleBoxBorder = Color(0x00000000)
 internal val LightSectionLabel = Color(0xFF6E6E6E)
 internal val LightCopyButton = Color(0xFFC49428)
 internal val LightCardBorder = Color(0x00000000)
+internal val LightSwitchTrackOff = Color(0xFFCDD0D5)
+internal val LightSwitchThumbOff = Color(0xFFFFFFFF)
+internal val LightSliderInactive = Color(0xFFEAEEED)
 
 // ---------- Dark theme ----------
 internal val DarkBackground = Color(0xFF151A20)
@@ -68,6 +71,9 @@ internal val DarkExampleBoxBorder = Color(0xFF4A402A)
 internal val DarkSectionLabel = Color(0xFF2BA05A)
 internal val DarkCopyButton = Color(0xFFB27D13)
 internal val DarkCardBorder = Color(0xFF2A323A)
+internal val DarkSwitchTrackOff = Color(0xFF3A4557)
+internal val DarkSwitchThumbOff = Color(0xFFDCDFE8)
+internal val DarkSliderInactive = Color(0xFF334255)
 
 /**
  * Colours the design needs that Material 3 has no slot for.
@@ -97,6 +103,9 @@ class NaijaColors(
     val sectionLabel: Color,
     val copyButton: Color,
     val cardBorder: Color,
+    val switchTrackOff: Color,
+    val switchThumbOff: Color,
+    val sliderInactive: Color,
 )
 
 internal val LightNaijaColors = NaijaColors(
@@ -122,6 +131,9 @@ internal val LightNaijaColors = NaijaColors(
     sectionLabel = LightSectionLabel,
     copyButton = LightCopyButton,
     cardBorder = LightCardBorder,
+    switchTrackOff = LightSwitchTrackOff,
+    switchThumbOff = LightSwitchThumbOff,
+    sliderInactive = LightSliderInactive,
 )
 
 internal val DarkNaijaColors = NaijaColors(
@@ -147,6 +159,9 @@ internal val DarkNaijaColors = NaijaColors(
     sectionLabel = DarkSectionLabel,
     copyButton = DarkCopyButton,
     cardBorder = DarkCardBorder,
+    switchTrackOff = DarkSwitchTrackOff,
+    switchThumbOff = DarkSwitchThumbOff,
+    sliderInactive = DarkSliderInactive,
 )
 
 internal val LocalNaijaColors = staticCompositionLocalOf { LightNaijaColors }

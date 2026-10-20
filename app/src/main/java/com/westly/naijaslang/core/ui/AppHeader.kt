@@ -34,11 +34,13 @@ import com.westly.naijaslang.core.theme.NaijaTheme
  *  - [Home]: settings gear on the right (opens Settings).
  *  - [Plain]: no icons (Favourites, Settings).
  *  - [Detail]: back arrow on the left, share icon on the right (used by Word Detail in Phase 4).
+ *  - [Back]: back arrow on the left, nothing on the right (used by the About page).
  */
 sealed interface HeaderVariant {
     data class Home(val onSettingsClick: () -> Unit) : HeaderVariant
     data object Plain : HeaderVariant
     data class Detail(val onBackClick: () -> Unit, val onShareClick: () -> Unit) : HeaderVariant
+    data class Back(val onBackClick: () -> Unit) : HeaderVariant
 }
 
 private const val HEADER_TILE_DP = 120f
@@ -79,8 +81,13 @@ fun AppHeader(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                if (variant is HeaderVariant.Detail) {
-                    IconButton(onClick = variant.onBackClick) {
+                val onBackClick = when (variant) {
+                    is HeaderVariant.Detail -> variant.onBackClick
+                    is HeaderVariant.Back -> variant.onBackClick
+                    else -> null
+                }
+                if (onBackClick != null) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.cd_back),
@@ -127,7 +134,7 @@ fun AppHeader(
                         )
                     }
 
-                    HeaderVariant.Plain -> Spacer(Modifier.width(8.dp))
+                    is HeaderVariant.Back, HeaderVariant.Plain -> Spacer(Modifier.width(8.dp))
                 }
             }
 
