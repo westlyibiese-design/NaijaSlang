@@ -49,6 +49,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,6 +85,8 @@ fun SettingsScreen(onOpenAbout: () -> Unit) {
     val noEmailMessage = stringResource(R.string.no_email_app)
     val reportSubject = stringResource(R.string.report_subject)
     val contactEmail = stringResource(R.string.contact_email)
+    val darkModeLabel = stringResource(R.string.cd_dark_mode)
+    val textSizeLabel = stringResource(R.string.cd_text_size)
 
     Column(modifier = Modifier.fillMaxSize()) {
         AppHeader()
@@ -105,6 +109,7 @@ fun SettingsScreen(onOpenAbout: () -> Unit) {
                             // Shows the theme that is really in use (phone setting until a choice is saved).
                             checked = colors.isDark,
                             onCheckedChange = { dark -> scope.launch { repository.setDarkMode(dark) } },
+                            modifier = Modifier.semantics { contentDescription = darkModeLabel },
                             colors = SwitchDefaults.colors(
                                 checkedThumbColor = Color.White,
                                 checkedTrackColor = colors.gold,
@@ -163,7 +168,8 @@ fun SettingsScreen(onOpenAbout: () -> Unit) {
                         ),
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 4.dp),
+                            .padding(horizontal = 4.dp)
+                            .semantics { contentDescription = textSizeLabel },
                     )
                     Box(modifier = Modifier.width(44.dp), contentAlignment = Alignment.Center) {
                         Text(
@@ -191,7 +197,7 @@ fun SettingsScreen(onOpenAbout: () -> Unit) {
                     icon = Icons.Outlined.Star,
                     title = stringResource(R.string.settings_rate),
                     subtitle = stringResource(R.string.settings_rate_sub),
-                    // Does nothing for now: it will be connected after the app is on Google Play.
+                    // TODO: connect after the app is on Google Play (does nothing for now).
                     onClick = { },
                     trailing = { ChevronIcon() },
                 )
@@ -200,7 +206,7 @@ fun SettingsScreen(onOpenAbout: () -> Unit) {
                     icon = Icons.Outlined.Share,
                     title = stringResource(R.string.settings_share),
                     subtitle = stringResource(R.string.settings_share_sub),
-                    // Does nothing for now: it will be connected after the app is on Google Play.
+                    // TODO: connect after the app is on Google Play (does nothing for now).
                     onClick = { },
                     trailing = { ChevronIcon() },
                 )

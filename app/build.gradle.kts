@@ -41,8 +41,13 @@ android {
 
     buildTypes {
         release {
-            // Minification stays OFF in Phase 1 (handled in Phase 6).
-            isMinifyEnabled = false
+            // Code and resource shrinking (R8). Keep rules are in proguard-rules.pro.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
             if (hasSigningEnv) {
                 signingConfig = signingConfigs.getByName("release")
             }
