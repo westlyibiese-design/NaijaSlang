@@ -61,11 +61,11 @@ import com.westly.naijaslang.core.ui.HeaderVariant
 import kotlinx.coroutines.launch
 
 /**
- * Phase 3: the A to Z list with the side bar, hearts, and live search.
- * Tapping a card does nothing yet (Word Detail comes in Phase 4).
+ * The A to Z list with the side bar, hearts, and live search.
+ * Tapping a card opens its Word Detail (Phase 4); the heart toggles on its own.
  */
 @Composable
-fun HomeScreen(onOpenSettings: () -> Unit) {
+fun HomeScreen(onOpenSettings: () -> Unit, onOpenWord: (String) -> Unit) {
     val dictionaryState by AppData.dictionary.collectAsState()
     val favouriteIds by AppData.favouriteIds.collectAsState()
     val index = (dictionaryState as? DictionaryState.Ready)?.index
@@ -88,9 +88,14 @@ fun HomeScreen(onOpenSettings: () -> Unit) {
         ) {
             if (index != null) {
                 if (trimmedQuery.isEmpty()) {
-                    BrowseList(index = index, favouriteIds = favouriteIds)
+                    BrowseList(index = index, favouriteIds = favouriteIds, onOpenWord = onOpenWord)
                 } else {
-                    SearchResults(index = index, query = trimmedQuery, favouriteIds = favouriteIds)
+                    SearchResults(
+                        index = index,
+                        query = trimmedQuery,
+                        favouriteIds = favouriteIds,
+                        onOpenWord = onOpenWord,
+                    )
                 }
             }
         }
@@ -99,7 +104,11 @@ fun HomeScreen(onOpenSettings: () -> Unit) {
 
 /** The full A to Z list with letter headings and the side bar. */
 @Composable
-private fun BrowseList(index: DictionaryIndex, favouriteIds: Set<String>) {
+private fun BrowseList(
+    index: DictionaryIndex,
+    favouriteIds: Set<String>,
+    onOpenWord: (String) -> Unit,
+) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
@@ -148,6 +157,7 @@ private fun BrowseList(index: DictionaryIndex, favouriteIds: Set<String>) {
                         entry = row.entry,
                         isFavourite = row.entry.id in favouriteIds,
                         onToggleFavourite = { AppData.toggleFavourite(row.entry.id) },
+                        onClick = { onOpenWord(row.entry.id) },
                     )
                 }
             }
@@ -170,13 +180,25 @@ private fun BrowseList(index: DictionaryIndex, favouriteIds: Set<String>) {
 
 /** Search results as a flat list: no letter headings, no side bar. */
 @Composable
-private fun SearchResults(index: DictionaryIndex, query: String, favouriteIds: Set<String>) {
+private fun SearchResults(
+    index: DictionaryIndex,
+    query: String,
+    favouriteIds: Set<String>,
+    onOpenWord: (String) -> Unit,
+) {
     val colors = NaijaTheme.colors
     val results = remember(index, query) { index.search(query) }
     val listState = rememberLazyListState()
 
-    // Every new search starts at the top.
-    LaunchedEffect(query) { listState.scrollToItem(0) }
+    // Every new search starts at the top. Coming back from Word Detail keeps the position
+    // (the last searched text is remembered, so the same text does not scroll to the top).
+    var lastQuery by rememberSaveable { mutableStateOf(query) }
+    LaunchedEffect(query) {
+        if (query != lastQuery) {
+            listState.scrollToItem(0)
+            lastQuery = query
+        }
+    }
 
     if (results.isEmpty()) {
         Text(
@@ -199,6 +221,7 @@ private fun SearchResults(index: DictionaryIndex, query: String, favouriteIds: S
                     entry = entry,
                     isFavourite = entry.id in favouriteIds,
                     onToggleFavourite = { AppData.toggleFavourite(entry.id) },
+                    onClick = { onOpenWord(entry.id) },
                 )
             }
         }
@@ -215,16 +238,18 @@ private fun LetterHeading(letter: String) {
     )
 }
 
-/** A rounded card: word, meaning (two lines at most) and the heart. Not clickable yet. */
+/** A rounded card: word, meaning (two lines at most) and the heart. Tapping the card calls [onClick]. */
 @Composable
-private fun WordCard(
+internal fun WordCard(
     entry: DictionaryEntry,
     isFavourite: Boolean,
     onToggleFavourite: () -> Unit,
+    onClick: () -> Unit,
 ) {
     val colors = NaijaTheme.colors
 
     Surface(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp),

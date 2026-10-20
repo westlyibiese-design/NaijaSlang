@@ -1,5 +1,6 @@
 package com.westly.naijaslang.navigation
 
+import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -31,21 +32,27 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import androidx.navigation.compose.rememberNavController
 import com.westly.naijaslang.R
 import com.westly.naijaslang.core.theme.NaijaTheme
+import com.westly.naijaslang.feature.detail.WordDetailScreen
 import com.westly.naijaslang.feature.favourites.FavouritesScreen
 import com.westly.naijaslang.feature.home.HomeScreen
 import com.westly.naijaslang.feature.settings.SettingsScreen
 
-/** Routes of the three tabs. The Word Detail route is added in Phase 4. */
+/** Routes of the three tabs and of the Word Detail screen (opened from Home or Favourites). */
 object Routes {
     const val HOME = "home"
     const val FAVOURITES = "favourites"
     const val SETTINGS = "settings"
+    const val DETAIL = "detail/{id}"
+
+    fun detail(id: String) = "detail/${Uri.encode(id)}"
 }
 
 private class TabItem(
@@ -67,6 +74,7 @@ fun AppNavigation() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val destination = backStackEntry?.destination
+    val onDetail = destination?.route == Routes.DETAIL
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -74,8 +82,18 @@ fun AppNavigation() {
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             AppBottomBar(
-                isSelected = { route -> destination?.hierarchy?.any { it.route == route } == true },
-                onTabClick = { route -> navController.navigateToTab(route) },
+                // Word Detail keeps Home selected, as in the design.
+                isSelected = { route ->
+                    if (onDetail) {
+                        route == Routes.HOME
+                    } else {
+                        destination?.hierarchy?.any { it.route == route } == true
+                    }
+                },
+                onTabClick = { route ->
+                    if (onDetail) navController.popBackStack()
+                    navController.navigateToTab(route)
+                },
             )
         },
     ) { innerPadding ->
@@ -89,10 +107,24 @@ fun AppNavigation() {
             popExitTransition = { fadeOut(tween(100)) },
         ) {
             composable(Routes.HOME) {
-                HomeScreen(onOpenSettings = { navController.navigateToTab(Routes.SETTINGS) })
+                HomeScreen(
+                    onOpenSettings = { navController.navigateToTab(Routes.SETTINGS) },
+                    onOpenWord = { id -> navController.navigate(Routes.detail(id)) },
+                )
             }
-            composable(Routes.FAVOURITES) { FavouritesScreen() }
+            composable(Routes.FAVOURITES) {
+                FavouritesScreen(onOpenWord = { id -> navController.navigate(Routes.detail(id)) })
+            }
             composable(Routes.SETTINGS) { SettingsScreen() }
+            composable(
+                route = Routes.DETAIL,
+                arguments = listOf(navArgument("id") { type = NavType.StringType }),
+            ) { entry ->
+                WordDetailScreen(
+                    entryId = entry.arguments?.getString("id").orEmpty(),
+                    onBack = { navController.popBackStack() },
+                )
+            }
         }
     }
 }

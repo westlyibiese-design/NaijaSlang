@@ -21,6 +21,12 @@
     <string name="favourites_title">Favourites</string>
     <string name="favourites_empty">No favourites yet. Tap the heart on any word to save it here.</string>
 
+    <!-- Word Detail -->
+    <string name="detail_meaning">Meaning</string>
+    <string name="detail_example">Example</string>
+    <string name="detail_copy_word">Copy word</string>
+    <string name="detail_copied">Copied</string>
+
     <!-- Accessibility descriptions -->
     <string name="cd_settings">Settings</string>
     <string name="cd_back">Back</string>

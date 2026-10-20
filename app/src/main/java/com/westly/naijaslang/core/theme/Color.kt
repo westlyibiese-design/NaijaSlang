@@ -43,6 +43,10 @@ internal val LightSearchBorder = Color(0x00000000)
 internal val LightSearchIcon = Color(0xFF04502D)
 internal val LightDetailBackground = Color(0xFFFFFAEE)
 internal val LightExampleBox = Color(0xFFFAF6EC)
+internal val LightExampleBoxBorder = Color(0x00000000)
+internal val LightSectionLabel = Color(0xFF6E6E6E)
+internal val LightCopyButton = Color(0xFFC49428)
+internal val LightCardBorder = Color(0x00000000)
 
 // ---------- Dark theme ----------
 internal val DarkBackground = Color(0xFF151A20)
@@ -59,7 +63,11 @@ internal val DarkSearchBar = Color(0xFF2A323A)
 internal val DarkSearchBorder = Color(0xFF3A444C)
 internal val DarkSearchIcon = Color(0xFF4FBD7E)
 internal val DarkDetailBackground = Color(0xFF161C22)
-internal val DarkExampleBox = Color(0xFF262F37)
+internal val DarkExampleBox = Color(0xFF332F24)
+internal val DarkExampleBoxBorder = Color(0xFF4A402A)
+internal val DarkSectionLabel = Color(0xFF2BA05A)
+internal val DarkCopyButton = Color(0xFFB27D13)
+internal val DarkCardBorder = Color(0xFF2A323A)
 
 /**
  * Colours the design needs that Material 3 has no slot for.
@@ -85,6 +93,10 @@ class NaijaColors(
     val navUnselected: Color,
     val detailBackground: Color,
     val exampleBox: Color,
+    val exampleBoxBorder: Color,
+    val sectionLabel: Color,
+    val copyButton: Color,
+    val cardBorder: Color,
 )
 
 internal val LightNaijaColors = NaijaColors(
@@ -106,6 +118,10 @@ internal val LightNaijaColors = NaijaColors(
     navUnselected = LightNavUnselected,
     detailBackground = LightDetailBackground,
     exampleBox = LightExampleBox,
+    exampleBoxBorder = LightExampleBoxBorder,
+    sectionLabel = LightSectionLabel,
+    copyButton = LightCopyButton,
+    cardBorder = LightCardBorder,
 )
 
 internal val DarkNaijaColors = NaijaColors(
@@ -127,6 +143,10 @@ internal val DarkNaijaColors = NaijaColors(
     navUnselected = DarkNavUnselected,
     detailBackground = DarkDetailBackground,
     exampleBox = DarkExampleBox,
+    exampleBoxBorder = DarkExampleBoxBorder,
+    sectionLabel = DarkSectionLabel,
+    copyButton = DarkCopyButton,
+    cardBorder = DarkCardBorder,
 )
 
 internal val LocalNaijaColors = staticCompositionLocalOf { LightNaijaColors }
