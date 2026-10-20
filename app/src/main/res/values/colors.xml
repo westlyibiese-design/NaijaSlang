@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Plain colour shown by the system for a split second before the animated splash.
+         Light theme: green (middle of the green splash gradient). -->
+    <color name="splash_background">#07603A</color>
+
+    <!-- Background layer of the adaptive launcher icon (matches the icon artwork). -->
+    <color name="ic_launcher_background">#04652F</color>
+</resources>

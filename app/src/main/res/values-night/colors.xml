@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark theme: middle of the dark splash gradient. -->
+    <color name="splash_background">#161B22</color>
+</resources>

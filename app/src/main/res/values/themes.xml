@@ -1,8 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--
+        Theme used after the system splash. The window background is the same
+        colour as the animated splash, so nothing else can flash on screen.
+        Status and navigation bars are transparent (edge to edge).
+    -->
     <style name="Theme.NaijaSlang" parent="@android:style/Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">#0A6B3A</item>
-        <item name="android:navigationBarColor">#0A6B3A</item>
-        <item name="android:windowBackground">#0A6B3A</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/splash_background</item>
     </style>
+
+    <!--
+        Theme used while the app starts. On Android 12 and above the system
+        always draws its own splash first. Here it is a plain colour with a
+        fully transparent icon, so the animated Compose splash is the first
+        thing that really appears. Android 8 to 11 use the same colour as the
+        window background.
+    -->
+    <style name="Theme.NaijaSlang.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="postSplashScreenTheme">@style/Theme.NaijaSlang</item>
+    </style>
+
 </resources>
