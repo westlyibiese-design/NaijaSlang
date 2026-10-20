@@ -1,0 +1,83 @@
+name: Build signed APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NAIJASLANG_KEYSTORE_BASE64: ${{ secrets.NAIJASLANG_KEYSTORE_BASE64 }}
+      NAIJASLANG_KEYSTORE_PASSWORD: ${{ secrets.NAIJASLANG_KEYSTORE_PASSWORD }}
+      NAIJASLANG_KEY_ALIAS: ${{ secrets.NAIJASLANG_KEY_ALIAS }}
+      NAIJASLANG_KEY_PASSWORD: ${{ secrets.NAIJASLANG_KEY_PASSWORD }}
+      GH_TOKEN: ${{ github.token }}
+
+    steps:
+      - name: Check signing secrets
+        run: |
+          missing=0
+          for name in NAIJASLANG_KEYSTORE_BASE64 NAIJASLANG_KEYSTORE_PASSWORD NAIJASLANG_KEY_ALIAS NAIJASLANG_KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing GitHub secret: $name. Add it at https://github.com/${{ github.repository }}/settings/secrets/actions"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+          echo "All four signing secrets are present."
+
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Decode keystore
+        run: |
+          echo "$NAIJASLANG_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/naijaslang-release.jks"
+          echo "NAIJASLANG_KEYSTORE_PATH=$RUNNER_TEMP/naijaslang-release.jks" >> "$GITHUB_ENV"
+
+      - name: Build signed release APK
+        run: gradle :app:assembleRelease --stacktrace
+
+      - name: Name the APK
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk NaijaSlang-1.0.apk
+          ls -l NaijaSlang-1.0.apk
+
+      - name: Verify APK signature
+        run: |
+          APKSIGNER=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -n 1)
+          echo "Using $APKSIGNER"
+          "$APKSIGNER" verify --print-certs NaijaSlang-1.0.apk
+
+      - name: Upload APK as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NaijaSlang-1.0
+          path: NaijaSlang-1.0.apk
+          if-no-files-found: error
+
+      - name: Publish rolling pre-release "latest"
+        run: |
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest NaijaSlang-1.0.apk \
+            --prerelease \
+            --target "${{ github.sha }}" \
+            --title "NaijaSlang latest build" \
+            --notes "Rolling build from commit ${{ github.sha }}. Download NaijaSlang-1.0.apk and install it."
