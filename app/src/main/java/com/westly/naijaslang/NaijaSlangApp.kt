@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -17,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.westly.naijaslang.core.data.AppData
 import com.westly.naijaslang.core.prefs.UserPreferences
 import com.westly.naijaslang.core.theme.NaijaSlangTheme
 import com.westly.naijaslang.feature.splash.SplashScreen
@@ -36,8 +38,8 @@ fun NaijaSlangApp(preferences: UserPreferences) {
     // Survives rotation / theme changes of the phone, so the splash does not replay.
     var splashDone by rememberSaveable { mutableStateOf(false) }
 
-    // Phase 3: set this to true when the dictionary has loaded.
-    val dataReady = true
+    // True when the dictionary and the saved favourites have loaded; the splash waits for it.
+    val dataReady by AppData.ready.collectAsState()
 
     var appComposed by remember { mutableStateOf(splashDone) }
     LaunchedEffect(Unit) {

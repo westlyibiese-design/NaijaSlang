@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.westly.naijaslang.core.data.AppData
 import com.westly.naijaslang.core.prefs.PreferencesRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -18,6 +19,8 @@ class MainActivity : ComponentActivity() {
         // and then switches to the normal theme.
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        // Starts loading the dictionary on a background thread while the splash plays.
+        AppData.start(applicationContext)
         // Light icons on the splash. NaijaSlangApp adjusts the bars once the splash is gone.
         val transparent = android.graphics.Color.TRANSPARENT
         enableEdgeToEdge(

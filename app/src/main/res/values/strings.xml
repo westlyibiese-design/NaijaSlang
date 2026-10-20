@@ -15,6 +15,7 @@
 
     <!-- Home -->
     <string name="search_placeholder">Search a word or phrase</string>
+    <string name="search_no_results">No results for \'%1$s\'. Check the spelling or try another word.</string>
 
     <!-- Favourites -->
     <string name="favourites_title">Favourites</string>
@@ -25,4 +26,7 @@
     <string name="cd_back">Back</string>
     <string name="cd_share">Share</string>
     <string name="cd_search">Search</string>
+    <string name="cd_clear_search">Clear search</string>
+    <string name="cd_favourite_add">Add %1$s to favourites</string>
+    <string name="cd_favourite_remove">Remove %1$s from favourites</string>
 </resources>
